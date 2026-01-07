@@ -1,0 +1,9 @@
+{"plugins": [],
+ "package": "greeting",
+ "options": {},
+ "name": "Greeting",
+ "isModule": false,
+ "importArts":
+ {"Greeting.Basic":
+  ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/lib/lean/Greeting/Basic.olean"]},
+ "dynlibs": []}

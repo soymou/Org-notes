@@ -1,0 +1,13 @@
+{"plugins": [],
+ "package": "greeting",
+ "options": {},
+ "name": "Main",
+ "isModule": false,
+ "importArts":
+ {"Greeting.Smile":
+  ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/lib/lean/Greeting/Smile.olean"],
+  "Greeting.Basic":
+  ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/lib/lean/Greeting/Basic.olean"],
+  "Greeting":
+  ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/lib/lean/Greeting.olean"]},
+ "dynlibs": []}

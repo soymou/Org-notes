@@ -1,0 +1,106 @@
+* Proposiciones, pruebas e indizado
+Lean usa paréntesis cuadrados para hacer indizado de arrays y listas. Por ejemplo:
+#+begin_src lean4 :results output :session indexing 
+  def woodlandCritters : List String :=
+    ["hedgehog", "deer", "snail"]
+#+end_src
+
+#+RESULTS:
+
+#+begin_src lean4 :results output :session indexing 
+  def hedgehog := woodlandCritters[0]
+  def deer := woodlandCritters[1]
+  def snail := woodlandCritters[2]
+#+end_src
+
+#+RESULTS:
+
+Intentar extraer un cuarto elemento da un error
+#+begin_src lean4 :results output :session indexing 
+  def oops := woodlandCritters[3]
+#+end_src
+
+#+RESULTS:
+: ---OB-LEAN4-SEP-05a0---
+: /tmp/lean4-J5uXPi.lean:9:12: error: failed to prove index is valid, possible solutions:
+:   - Use `have`-expressions to prove the index is valid
+:   - Use `a[i]!` notation instead, runtime check is performed, and 'Panic' error message is produced if index is not valid
+:   - Use `a[i]?` notation instead, result is an `Option` type
+:   - Use `a[i]'h` notation instead, where `h` is a proof that index is valid
+: ⊢ 3 < woodlandCritters.length
+
+** Proposiciones y demostraciones
+Una proposición es un enunciado que puede ser verdadero o falso. Vienen en dos variantes:
+las que son puramente matemáticas, que sólo dependen de nuestras definiciones de conceptos y
+las que son hechos del mundo. Lean se preocupa de las primeras.
+
+Una demostración es un argumento convincente de que una proposición es verdadera. En Lean, las
+proposiciones son tipos. Especifican lo que cuenta como una demostración de que un enunciado
+es verdadero. Por ejemplo, la proposición ~1 + 1 = 2~ se puede escribir directamente en Lean y
+se puede demostrar mediante el constructor ~refl~.
+
+#+begin_src lean4 :results output :session proofs 
+  def onePlusOneIsTwo : 1 + 1 = 2 := rfl
+#+end_src
+
+Por otro lado, ~rfl~ no prueba la proposición falsa ~1 + 1 = 15~:
+
+#+begin_src lean4 :results output :session proofs 
+  def onePlusOneIsFifteen : 1 + 1 = 15 := rfl
+#+end_src
+
+#+RESULTS:
+#+begin_example
+---OB-LEAN4-SEP-16d7---
+/tmp/lean4-P0R6ev.lean:5:40: error: Type mismatch
+  rfl
+has type
+  ?m.16 = ?m.16
+but is expected to have type
+  1 + 1 = 15
+/tmp/lean4-P0R6ev.lean:5:4: error: Not a definitional equality: the left-hand side
+  1 + 1
+is not definitionally equal to the right-hand side
+  15
+#+end_example
+
+El ejemplo anterior se puede escribir como
+
+#+begin_src lean4 :results output 
+  def OnePlusOneIsTwo : Prop := 1 + 1 = 2
+
+  theorem onePlusOneIsTwo : OnePlusOneIsTwo := rfl
+#+end_src
+
+** Tácticas
+Para escribir una prueba con tácticas, hay que comenzar la definición con ~by~.
+
+#+begin_src lean4 :results output :session tactic 
+  theorem onePlusOneIsTwo : 1 + 1 = 2 := by
+    decide
+#+end_src
+
+La táctica decide invoca un /decision procedure/, que es un programa que puede verificar si un
+enunciado es verdadero o falso, regresando una demostración de cada caso. Se usa principalmente
+al trabajar con valores concretos. Las otras tácticas importantes son ~sim~ (simplify) y ~grind~
+que pueden probar muchos teoremas automáticamente.
+
+La táctica ~simp~ reescribe la meta de la manera más simple posible. En muchos casos, esto
+simplifica el enunciado tanto que se puede probar automáticamente.
+
+Como ~decide~, la táctica ~grind~ se usa para terminar pruebas. A diferencia de ~simp~, ~grind~ nunca
+puede hacer progreso hacia una prueba sin terminarla: tiene éxito o falla. 
+
+** Indizando sin evidencia
+Añadir un signo de interrogación resulta en un ~Option~
+#+begin_src lean4 :results output :session indexing 
+  def thirdOption (xs : List α) : Option α := xs[2]?
+
+  #eval thirdOption woodlandCritters
+
+  #eval thirdOption ["only", "two"]
+#+end_src
+
+#+RESULTS:
+: some "snail"
+: none

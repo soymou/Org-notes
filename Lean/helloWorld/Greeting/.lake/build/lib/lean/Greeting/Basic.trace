@@ -1,0 +1,28 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs":
+ {"o": ["06856946b57fc487.olean"],
+  "i": "c775d24422be5a23.ilean",
+  "c": "cf2ca67d781273e6.c"},
+ "log":
+ [{"message":
+   ".> LEAN_PATH=/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/lib/lean /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/bin/lean /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/Greeting/Basic.lean -o /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/lib/lean/Greeting/Basic.olean -i /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/lib/lean/Greeting/Basic.ilean -c /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Basic.c --setup /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Basic.setup.json --json",
+   "level": "trace"}],
+ "inputs":
+ [["Greeting.Basic:deps",
+   [["deps",
+     [["greeting/Greeting:extraDep",
+       [["@greeting:extraDep", "00000000000006bb"]]],
+      ["imports", "00000000000006bb"]]],
+    ["libs",
+     [["import dynlibs", "00000000000006bb"],
+      ["package external libraries", "00000000000006bb"],
+      ["module dynlibs", "00000000000006bb"],
+      ["module plugins", "00000000000006bb"]]]]],
+  ["Lean 4.28.0, commit ff87bcb8e57caeee38aa1dd05a212c0b2c51a902",
+   "13a94847ee021cbc"],
+  ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/Greeting/Basic.lean",
+   "fb8d37be36883ee0"],
+  ["options", "00000000000006bb"],
+  ["Module.leanArgs: #[]", "00000000000006bb"]],
+ "depHash": "6a592282134c9c80"}

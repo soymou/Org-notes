@@ -1,0 +1,23 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs": "014faa8f9415b37d",
+ "log":
+ [{"message":
+   ".> /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/bin/clang -o /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/bin/greeting /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Main.c.o.export /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Basic.c.o.export /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting.c.o.export /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Smile.c.o.export -L /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/lib/lean --sysroot /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07 -L /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/lib -L /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/lib/glibc -lc -lc_nonshared -Wl,--as-needed -l:ld.so -Wl,--no-as-needed -lpthread_nonshared -Wl,--as-needed -Wl,-Bstatic -lgmp -lunwind -luv -Wl,-Bdynamic -Wl,--no-as-needed -fuse-ld=lld -Wl,--start-group -lleancpp -lLean -Wl,--end-group -lStd -Wl,--start-group -lInit -lleanrt -Wl,--end-group -Wl,-Bstatic -lc++ -lc++abi -Wl,-Bdynamic -lLake -Wl,--as-needed -lgmp -luv -lpthread -ldl -lrt -Wl,--no-as-needed -lm -ldl -pthread",
+   "level": "trace"}],
+ "inputs":
+ [["linkObjs",
+   [["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Main.c.o.export",
+     "436746cb0c5609e2"],
+    ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Basic.c.o.export",
+     "619730952f456f7d"],
+    ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting.c.o.export",
+     "89f110a4910da469"],
+    ["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Smile.c.o.export",
+     "9b56c6eaf949fef1"]]],
+  ["linkLibs", "00000000000006bb"],
+  ["Lean 4.28.0, commit ff87bcb8e57caeee38aa1dd05a212c0b2c51a902",
+   "13a94847ee021cbc"],
+  ["traceArgs: #[]", "00000000000006bb"],
+  ["x86_64-unknown-linux-gnu", "53a0e8937c307c28"]],
+ "depHash": "71f3a95d691adb51"}

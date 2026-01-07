@@ -1,0 +1,432 @@
+* Hello, World!
+** Correr un programa
+La manera más sencilla de correr un programa es usar la opción ~--run~ del ejecutable de Lean.
+Como primer ejemplo, creemos el siguiente programa
+
+#+begin_src lean4 :results output :tangle Hello/Hello.lean  
+  def main : IO Unit := IO.println "Hello, world!"
+#+end_src
+
+El programa imprime Hello, world! y se termina.
+
+** Anatomía de un greeting
+Cuando Lean es invocado con la opción ~--run~, invoca la definición de main. En los programas que
+no tienen argumentos de la línea de comandos, main debe tener tipo ~IO Unit~. Esto significa que
+main no es una función, pues no hay flechas en su tipo. En lugar de ser una función que tiene efectos
+secundarios, main consiste de una descripción de los efectos que se deben llevar a cabo.
+
+Unit es el tipo inductivo más sencillo. Tiene un sólo constructor llamado unit que no toma ningún argumento.
+En Lean, todas las funciones toman un argumento y regresan un valor y la falta de valores interesantes
+para estos se puede representar usando el tipo Unit. Si Bool representa un bit de información, Unit
+representa cero bits de información.
+
+~IO α~  es el tipo del programa que, cuando se ejecuta, devuelve una excepción o un valor de tipo α.
+Durante la ejecución, este programa puede tener efectos secundarios. A estos programas se les conoce como
+acciones de IO. Lean distingue entre la /evaluación/ de expresiones, que se adhiere estrictamente al modelo
+matemático de substitución de valores por variables y la reducción de sub-expresiones sin efectos secundarios,
+y la ejecución de acciones de IO, que dependen de un sistema externo para interactuar con el mundo.
+~IO.println~ es una función de strings a acciones de IO que, cuando se ejecuta, escribe el string dado al
+output estándar. Como esta acción no lee información interesante del ambiente en el proceso de emitir
+el string, ~IO.println~ tiene tipo ~String → IO Unit~. Si regresara algo interesante, entonces la acción IO
+tendría un tipo diferente de ~Unit~.
+
+** Programación funcional vs. efectos
+El modelo de computación de Lean se basa en la evaluación de expresiones matemáticas, en el que las
+variables tienen un sólo valor que no cambia con el tiempo. El resultado de evaluar una
+expresión no cambia y evaluar la misma expresión devuelve el mismo resultado.
+
+El modelo de efectos secundarios es similar al agregado del lenguaje Lean, su compilador y su run-time system
+(RTS). Los primitivos en el run-time system, escrito en C, implementan todos los efectos básicos. Cuando
+corremos un programa, el RTS invoca la acción main, que regresa nuevas acciones IO al RTS para ser ejecutadas.
+El RTS ejecuta estas acciones, delegando al código del usuario para llevar a cabo la computación. Desde
+la perspectiva interna, los programas no tienen efectos secundarios y la acciones IO son sólo
+descripciones de las tareas que se deben llevar a cabo.
+
+
+** Combinando acciones de IO
+La mayoría de programas aceptan input y producen output. Más aún, toman decisiones basados en el input, usando
+los datos de input como parte de una computación. El siguiente programa, llamado ~HelloName.lean~, le pide
+al usuario su nombre y lo saluda:
+
+#+begin_src lean4 :results output :tangle Hello/HelloName.lean
+  def main : IO Unit := do
+    let stdin ← IO.getStdin
+    let stdout ← IO.getStdout
+
+    stdout.putStrLn "¿Cómo quieres que te llame?"
+    let input ← stdin.getLine
+    let name := input.dropEndWhile Char.isWhitespace
+
+    stdout.putStrLn s!"Hola, {name}!"
+#+end_src
+
+
+En este programa, la acción main consiste de un bloque *do*. Este bloque contiene una secuencia de
+/enunciados/, que pueden ser variables locales (que se introducen usando *let*) y acciones que se
+deben ejecutar. Las acciones de IO que se construyen con un bloque *do* se ejecutan ejecutando cada
+enunciado de forma ordenada.
+
+Las primeras dos líneas del programa
+
+#+begin_src lean4 
+let stdin ← IO.getStdin
+let stdout ← IO.getStdout
+#+end_src
+
+toman handles de /stdin/ y /stdout/ ejecutando las acciones ~IO.getStdin~ y ~IO.getStdout~. Usualmente, las
+definiciones locales en un *let* sólo se pueden usar en una expresión que sigue inmediatamente a la
+definición local. En un bloque *do* las definiciones locales están disponibles en todo el bloque.
+Usar una "←" en lugar de ":=" significa que el valor de la expresión es una acción de IO que se debe
+ejecutar y cuyo resultado debe guardarse en la variable. Si la expresión a la derecha tiene tipo
+~IO α~, entonces la variable tiene tipo α en el resto del bloque *do*.
+
+** Acciones de IO como valores
+No todas las acciones de IO se deben ejecutar cuando son creadas. La habilidad de mencionar una acción
+sin ser ejecutada permite que las funciones ordinarias sirvan de estructuras de control.
+
+Por ejemplo, la función ~twice~ toma una acción IO como argumento y regresa una acción que ejecuta
+la acción del argumento dos veces
+
+#+begin_src lean4 :results output :session actions
+  def twice (action : IO Unit) : IO Unit := do
+    action
+    action 
+
+  #eval twice (IO.println "Hola")
+#+end_src
+
+#+RESULTS:
+: Hola
+: Hola
+
+
+Esto se puede generalizar de la siguiente manera
+
+#+begin_src lean4 :results output :session actions 
+  def nTimes (action : IO Unit) : Nat → IO Unit 
+    | 0 => pure ()
+    | n + 1 => do
+      action
+      nTimes action n
+  #eval nTimes (IO.println "Hola") 5
+#+end_src
+
+#+RESULTS:
+: Hola
+: Hola
+: Hola
+: Hola
+: Hola
+
+
+En el caso base para ~Nat.zero~, el resultado es ~pure ()~. La función ~pure~ crea una acción IO que no
+tiene efectos secundarios, pero regresa su argumento, que en este caso es el constructor para ~Unit~.
+En el paso recursivo se usa un bloque *do* para crear una acción que primero ejecuta la acción y luego
+ejecuta el resultado de la llamada recursiva.
+
+El hecho de que las acciones de IO sean valores de primera clase significa que se pueden guardar en
+estructuras de datos para ejecución futura. Por ejemplo, la función ~countdown~ toma un ~Nat~ y regresa una
+lista de acciones IO sin ejecutar
+
+#+begin_src lean4 :results output :session actions 
+  def countdown : Nat → List (IO Unit)
+    | 0 => [IO.println "Blast off!"]
+    | n + 1 => IO.println s!"{n + 1}" :: countdown n
+#+end_src
+
+#+RESULTS:
+
+
+Esta función no tiene efectos secundarios y no imprime nada. Por ejemplo, se puede aplicar a un argumento
+para obtener un a lista de acciones
+
+#+begin_src lean4 :results output :session actions 
+def from5 : List (IO Unit) := countdown 5
+#+end_src
+
+#+RESULTS:
+
+
+Esta lista contiene 6 elementos (uno para cada elemento y una acción "Blast off!" para cero):
+
+#+begin_src lean4 :results output :session actions 
+#eval from5.length
+#+end_src
+
+#+RESULTS:
+: 6
+
+
+La función ~runActions~ toma una lista de acciones y construye una sola acción que las ejecuta todas
+
+#+begin_src lean4 :results output :session actions 
+  def runActions : List (IO Unit) → IO Unit
+    | [] => pure ()
+    | act :: actions => do
+      act
+      runActions actions
+
+  #eval runActions from5
+#+end_src
+
+#+RESULTS:
+: 5
+: 4
+: 3
+: 2
+: 1
+: Blast off!
+
+* Comenzando un proyecto
+** Primeros pasos
+Para empezar un proyecto que usa Lake, hay que usar el comando ~lake new <nombre>~ en un directorio que
+no contenga un directorio o archivo llamado ~<nombre>~. Esto crea un directorio llamado nombre que contiene
+
+- ~Main.lean~ el archivo en el que el compilador va a buscar la acción main.
+- ~<nombre>.lean~ y ~<nombre>/Basic.lean~ son los peldaños para una biblioteca para el programa.
+- ~lakefile.toml~ contiene la configuración que lake necesita para construir la aplicación.
+- ~lean-toolchain~ contiene un identificador de la versión específica de Lean usada en el proyecto.  
+
+Adicionalmente, ~lake new~ inicia un repositorio de Git y configura el ~.gitignore~. Típicamente, la mayoría
+de la lógica de la aplicación será una colección de bibliotecas para el programa y ~Main.lean~ contendrá un
+wrapper alrededor para hacer parsing de la línea de comandos y ejecutar la lógica central. Para crear un
+proyecto en un directorio existente podemos usar ~lake init~.
+
+Este es el contenido por defecto de los archivos:
+
+- El archivo de biblioteca ~Greeting/Basic.lean~ contiene una sola definición: 
+    #+begin_src lean4 :tangle Greeting/Greeting/Basic.lean
+    def hello := "world"
+    #+end_src
+
+- El archivo de biblioteca ~Greeting.lean~ importa ~Greeting/Basic.lean~
+  #+begin_src lean4 :tangle Greeting/Greeting.lean 
+    -- This module serves as the root of the `Greeting` library.
+    -- Import modules here that should be built as part of the l
+    import Greeting.Basic
+  #+end_src
+
+  Esto significa que todo lo que se defina en ~Greeting/Basic.lean~ también estará disponible para todos los
+  archivos que importan ~Greeting.lean~. En los imports, los puntos se interpretan como directorios en el disco.
+
+- El archivo ejecutable ~Main.lean~ contiene:
+  #+begin_src lean4
+    import Greeting
+
+    def main : IO Unit :=
+      IO.println s!"Hello, {hello}!"
+  #+end_src
+
+** Lakefiles
+Un ~lakefile.toml~ describe un /package/, que es una colección coherente de código Lean para distribuir. Un
+/package/ puede contener cualquier número de bibliotecas o ejecutables. El ~lakefile.toml~ generado contiene:
+
+#+begin_src toml :tangle Greeting/lakefile.toml
+  name = "greeting"
+  version = "0.1.0"
+  defaultTargets = ["greeting"]
+
+  [[lean_lib]]
+  name = "Greeting"
+
+  [[lean_exe]]
+  name = "greeting"
+  root = "Main"
+#+end_src
+
+La configuración inicial consiste de tres cosas:
+- /package settings/ al principio del archivo.
+- una /library declaration/, llamada Greeting
+- un /executable/ llamado greeting
+  
+** Bibliotecas e imports
+Podemos agregar archivos a la biblioteca
+
+#+begin_src lean4 :tangle Greeting/Greeting/Smile.lean 
+  def Expression.happy : String := "a big smile"
+#+end_src
+
+significa que ~Main.lean~ lo puede usar como sigue
+
+#+begin_src lean4 :tangle Greeting/Main.lean 
+  import Greeting
+  import Greeting.Smile
+
+  open Expression
+
+  def main : IO Unit :=
+    IO.println s!"Hello, {hello}, with {happy}!"
+#+end_src
+
+* Ejemplo trabajado: cat
+
+** Empezando
+Para empezar podemos correr ~lake new feline exe~ para usar un template sin sección de biblioteca
+
+#+begin_src shell 
+lake new feline exe
+#+end_src
+
+** Concatenando Streams
+Lo primero que hay que haces es decidir qué tan grandes van a ser los bloques que vamos a leer.
+Vamos a usar 20 kilobytes. ~USize~ es un tipo entero sin signo que es lo suficientemente grande
+como para representar los tamaños válidos de arrays.
+
+#+begin_src lean4 :tangle feline/Main.lean 
+def bufsize : USize := 20 * 1024
+#+end_src
+
+*** Streams
+El trabajo pesado de feline es realizado por dump, que lee input un bloque a la vez,
+haciendo dump del resultado al standard output, hasta que el final del input se alcanza.
+
+#+begin_src lean4 :tangle feline/Main.lean 
+  partial def dump (stream : IO.FS.Stream) : IO Unit := do
+    let buf ← stream.read bufsize
+    if buf.isEmpty then
+      pure ()
+    else
+      let stdout ← IO.getStdout
+      stdout.write buf
+      dump stream
+#+end_src
+
+La función dump es declarada *partial*, pues se llama recursiamente sobre input que no
+es inmediatamente más pequeño que el argumento. Cuando una función es declarada parcial,
+Lean no requiere una prueba de que termina.
+
+El tipo ~IO.FS.Stream~ representa un POSIX stream. Es representado como una estructura que
+tiene un campo para cada operación de POSIX stream. Cada operación se representa mediante
+una acción de IO que da la acción correspondiente
+
+#+begin_src lean4  
+  structure Stream where
+    flush   : IO Unit
+    read    : USize → IO ByteArray
+    write   : ByteArray → IO Unit
+    getLine : IO String
+    putStr  : String → IO Unit
+    isTty   : BaseIO Bool
+#+end_src
+
+El tipo ~BaseIO~ es una variante de IO que quita errores de run-time.
+
+Como feline también debe ser capaz de abrir archivos, cuando uno de sus argumentos es
+un nombre de un archivo que existe, ~fileStream~ regresa un stream que lee el contenido.
+
+#+begin_src lean4 :tangle feline/Main.lean
+  def fileStream (filename : System.FilePath) : IO (Option IO.FS.Stream) := do
+    let fileExists ← filename.pathExists
+    if not fileExists then
+      let stderr ← IO.getStderr
+      stderr.putStrLn s!"File not found: {filename}"
+      pure none
+    else
+      let handle ← IO.FS.Handle.mk filename IO.FS.Mode.read
+      pure (some (IO.FS.Stream.ofHandle handle))
+#+end_src
+
+Abrir un archivo como stream requiere dos pasos. Primero, hay que crear un handle abriendo
+el archivo en modo lectura. Segundo, se crea un stream con ~IO.FS.Strea.ofHandle~.
+
+** Manejando input
+El loop principal de feline es ~process~. Toma un argumento ~exitCode~ que representa el
+código de termino actual para todo el programa. Adicionalmente, toma una lista de input files
+para procesarse
+
+#+begin_src lean4 :tangle feline/Main.lean 
+  def process (exitCode : UInt32) (args : List String) : IO UInt32 := do
+  match args with
+  | [] => pure exitCode
+  | "-" :: args =>
+    let stdin ← IO.getStdin
+    dump stdin
+    process exitCode args
+  | filename :: args =>
+    let stream ← fileStream ⟨filename⟩
+    match stream with
+    | none =>
+      process 1 args
+    | some stream =>
+      dump stream
+      process exitCode args
+#+end_src
+
+Hay tres opciones. La primera es que ya no haya ningún argumento que procesar y se
+devuelve el código de error. Otra es que el nombre del archivo sea "-", en ese caso
+process hace dump del contenido de standard input y procesa los demás argumentos.
+La última opción es que se especifique un filename, es este caso, se usa ~fileStream~
+para intentar abrirlo como un POSIX stream. Su argumento está encerrado entre "〈...〉"
+puesto que ~FilePath~ es una estructura de un sólo campo que contiene una string.
+
+** Main
+El último paso es escribir la acción main. En este caso, main es una función. En Lean,
+main puede tener uno de tres tipos
+- ~main : IO Unit~ corresponde a programas que no leen sus argumentos y siempre indican éxito
+  con código 0.
+- ~main : IO UInt32~ corresponde a programas que no leen sus argumentos y regresan códigos de
+   error
+- ~main : List String → IO UInt32~ corresponde a programas que leen sus argumentos y regresan
+  códigos de error
+
+Si no se da ningún argumento, feline debería leer de standard input.
+
+#+begin_src lean4 :tangle feline/Main.lean 
+  def main (args : List String) : IO UInt32 :=
+    match args with
+      | [] => process 0 ["-"]
+      | _ => process 0 args
+#+end_src
+
+Para verificar que feline funciona, primero hay que construirlo con ~lake build~.
+
+#+begin_src shell :results output  
+  cd feline
+  lake build  
+#+end_src
+
+#+RESULTS:
+: ✔ [2/4] Built Main (211ms)
+: Build completed successfully (4 jobs).
+
+Ahora lo podemos probar con standard input
+
+#+begin_src shell :results output
+  cd feline
+  echo "It works!" | lake exe feline
+#+end_src
+
+#+RESULTS:
+: It works!
+
+Ahora lo podemos probar con dos archivos
+
+#+begin_src txt :tangle feline/test1.txt
+  It's time to find a warm spot
+#+end_src
+
+#+begin_src txt :tangle feline/test2.txt 
+  and curl up!
+#+end_src
+
+Luego lo probamos
+
+#+begin_src shell :results output 
+  cd feline
+  lake exe feline test1.txt test2.txt
+#+end_src
+
+#+RESULTS:
+: It's time to find a warm spot
+: and curl up!
+
+Finalmente, el argumento "-" debe tratarse apropiadamente
+#+begin_src shell :results output 
+  cd feline
+  echo "and purr" | lake exe feline test1.txt - test2.txt
+#+end_src
+
+#+RESULTS:
+: It's time to find a warm spot
+: and purr
+: and curl up!

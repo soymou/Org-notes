@@ -1,0 +1,18 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs": "9b56c6eaf949fef1.o",
+ "log":
+ [{"message":
+   ".> /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/bin/clang -c -o /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Smile.c.o.export /home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Smile.c -I /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/include -fstack-clash-protection -fwrapv -fPIC -fvisibility=hidden -Wno-unused-command-line-argument --sysroot /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07 -nostdinc -isystem /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/include/clang -O3 -DNDEBUG -DLEAN_EXPORTING",
+   "level": "trace"}],
+ "inputs":
+ [["Greeting.Smile:c",
+   [["/home/mou/Desktop/Personal/Org/Lean/helloWorld/Greeting/.lake/build/ir/Greeting/Smile.c",
+     "137e688752713dc1"],
+    ["Lean 4.28.0, commit ff87bcb8e57caeee38aa1dd05a212c0b2c51a902",
+     "13a94847ee021cbc"]]],
+  ["Lean 4.28.0, commit ff87bcb8e57caeee38aa1dd05a212c0b2c51a902",
+   "13a94847ee021cbc"],
+  ["traceArgs: #[-O3, -DNDEBUG, -DLEAN_EXPORTING]", "c1efb66122fb2b9a"],
+  ["x86_64-unknown-linux-gnu", "53a0e8937c307c28"]],
+ "depHash": "bece016c0e904f7b"}

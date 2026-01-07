@@ -1,0 +1,1 @@
+{"decls":{"Expression.happy":[0,0,0,46,0,4,0,20]},"directImports":[],"module":"Greeting.Smile","references":{"{\"c\":{\"m\":\"Greeting.Smile\",\"n\":\"Expression.happy\"}}":{"definition":[0,4,0,20],"usages":[]},"{\"c\":{\"m\":\"Init.Prelude\",\"n\":\"String\"}}":{"definition":null,"usages":[[0,23,0,29,"Expression.happy"]]}},"version":5}

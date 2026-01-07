@@ -1,0 +1,514 @@
+* Evaluando expresiones
+Para pedirle a Lean que evalúe una expresión, hay que escribir ~#eval~ antes en el editor.
+
+#+begin_src lean4 :results output
+#eval 1 + 2
+#+end_src
+
+#+RESULTS:
+: 3
+
+Lean obedece las reglas de precedencia y asociatividad usuales para los operadores aritméticos.
+
+Para la evaluación de funciones, Lean no usa paréntesis
+
+#+begin_src lean4 :results output
+#eval String.append "Hello, " "Lean!"
+#+end_src
+
+#+RESULTS:
+: "Hello, Lean!"
+
+Los paréntesis son necesarios cuando un argumento de una función requiere que se llame a otra función
+
+#+begin_src lean4 :results output
+#eval String.append "great " (String.append "oak " "tree")
+#+end_src
+
+#+RESULTS:
+: "great oak tree"
+
+En Lean no hay enunciados condicionales, sólo expresiones condicionales. Se escriben usando
+~if~, ~then~ y ~else~. Por ejemplo
+
+#+begin_src lean4 :results output
+#eval String.append "It is " (if 1 < 2 then "yes" else "no")
+#+end_src
+
+#+RESULTS:
+: "It is yes"
+
+** Ejercicios
+¿Cuáles son los valores de las siguientes expresiones?
+
+- 42 + 19 -> 61
+  #+begin_src lean4 :results output
+    #eval 42 + 19
+  #+end_src
+
+  #+RESULTS:
+  : 61
+- String.append "A" (String.append "B" "C") -> "ABC"
+  #+begin_src lean4 :results output
+    #eval String.append "A" (String.append "B" "C")
+  #+end_src
+
+  #+RESULTS:
+  : "ABC"
+
+- String.append (String.append "A" "B") "C" -> "ABC"
+  #+begin_src lean4 :results output
+    String.append (String.append "A" "B") "C"
+  #+end_src
+
+  #+RESULTS:
+  : /tmp/babel-iXX7Ep/lean-dzKUgR:1:0: error: unexpected identifier; expected command
+
+
+
+* Tipos
+Todo programa en Lean debe tener un tipo. En particular, todo expresión debe tener un tipo antes de
+que sea evaluada. A veces es necesario decirle el tipo a Lean. Esto se hace con el operador ~:~
+
+#+begin_src lean4 :results output
+#eval (1 + 2 : Nat)
+#+end_src
+
+#+RESULTS:
+: 3
+
+Aquí, ~Nat~ es el tipo de los *números naturales*, que son enteros sin signo con precisión
+arbitraria. Como Nat sólo representa números sin signo, la restaen ~Nat~ regresa cero cuando la
+respuesta sería negativa:
+
+#+begin_src lean4 :results output
+#eval (1 - 2 : Nat)
+#+end_src
+
+#+RESULTS:
+: 0
+
+El tipo de los enteros con signo es ~Int~
+
+#+begin_src lean4 :results output
+#eval (1 - 2 : Int)
+#+end_src
+
+#+RESULTS:
+: -1
+
+* Funciones y definiciones
+En Lean, las definiciones se hacen con la palabra clave ~def~. Por ejemplo, para definir al nombre
+~hello~ que haga referencia al string "Hello", escribimos:
+
+#+begin_src lean4 :results output
+def hello := "Hello"
+#+end_src
+
+En Lean, los nombres se definen con el operador ~:=~.
+En la definción de ~hello~, la expresión "Hello" es suficiente para que Lean determine el tipo de
+~hello~ automáticamente. Si queremos agregarle un tipo, hacemos:
+
+#+begin_src lean4 :results output
+def lean : String := "Lean"
+#+end_src
+
+Una vez que definimos nombres, los podemos usar
+
+#+begin_src lean4 :results output
+def lean : String := "Lean"
+def hello : String := "Hello"
+#eval String.append hello (String.append " " lean) 
+#+end_src
+
+#+RESULTS:
+: "Hello Lean"
+
+En Lean, los nombres definidos sólo se pueden usar después de su definción.
+
+** Definiendo funciones
+Hay una variedad de maneras para definir funciones en Lean. La más sencilla es poner sus argumentos
+antes del tipo, separados por espacios:
+
+#+begin_src lean4 :results output
+  def add1 (n : Nat) : Nat := n + 1
+  #eval add1 7
+#+end_src
+
+#+RESULTS:
+: 8
+
+Las fucnioes que aceptan varios argumetnos se definen con espacios entre los argumentos:
+
+#+begin_src lean4 :results output
+  def maximum (n : Nat) (k : Nat) : Nat :=
+    if n < k then
+      k
+    else n
+
+  #eval maximum 2 7
+#+end_src
+
+#+RESULTS:
+: 7
+
+Cuando una función como ~maximum~ es provista de sus argumentos, el resultado se determina primero
+reemplazando los nombres de los argumentos por los valores provistos en el cuerpo de la función y
+luego evaluado el cuerpo resultante.
+
+Lean regresa la firma de la función cuando se usa directamente con ~#check~. 
+#+begin_src lean4 :results output
+  def add1 (n : Nat) : Nat := n + 1
+  #check add1
+#+end_src
+
+#+RESULTS:
+: add1 (n : Nat) : Nat
+
+Sin embargo, se puede forzar a Lean a que enseñe el tipo de la función si encerramos el nombre
+entre paréntesis:
+
+#+begin_src lean4 :results output
+  def add1 (n : Nat) : Nat := n + 1
+  #check (add1)
+#+End_src
+
+#+RESULTS:
+: add1 : Nat → Nat
+
+Detrás de Lean, todas las funciones esperan un sólo argumento, las funciones que toman varios
+argumentos son en realidad funciones que regresan funciones. Por ejemplo, la fucnión ~maximum~ que
+definimos antes, toma el primer argumento y devuelve una fucnión que toma el segundo argumento y
+luego devuelve el máximo de los dos argumentos. Es decir, en el primer paso, la función se
+evalúa parcialmente. A este fenómeno se le conoce como Currying,j en honor a Haskell Curry.
+
+
+** Ejercicios
+- Define la función joinStringsWith de tipo String -> String -> String -> String que crea un nuevo
+  string pponiendo su primer argumento entre el segundo y el tercero:
+  #+begin_src lean4 :results output :session ej-funciones
+    def joinStringsWith (s1 s2 s3 : String) : String :=
+      String.append s2 (String.append s1 s3)
+    #eval joinStringsWith "como " "Hola " "estás?"
+  #+end_src
+
+  #+RESULTS:
+  : "Hola como estás?"
+
+- Cual es el tipo de ~joinStringsWith~? -> String -> String -> String -> String
+  #+begin_src lean4 :results output :session ej-funciones
+   #check (joinStringsWith) 
+  #+end_src
+
+  #+RESULTS:
+  : joinStringsWith : String → String → String → String
+
+- Define un afunción ~volume~ de tipo Nat -> Nat -> Nat -> Nat que calcule el volumen de un
+  prisma rectangular dadas su altura, ancho y profundidad
+  #+begin_src lean4 :results output 
+    def volume (x y z : Nat) : Nat :=
+      x * y * z
+    #eval volume 3 2 2
+  #+end_src
+
+  #+RESULTS:
+  : 12
+
+
+* Definiendo tipos
+Si, por ejemplo, String es escribir demasiado, podemos definir una abreviación:
+
+#+begin_src lean4 :results output :session defining-types
+  def Str : Type := String
+#+end_src
+
+Luego podemos usar ~Str~ para definir un término
+
+#+begin_src lean4 :results output :session defining-types 
+  def aStr : Str := ("This is a string." : Str)
+#+end_src
+
+Finalmente, definir un nuevo nombre con ~abbrev~ en lugar de ~def~ permite cambiar el nombre por su
+definición
+
+#+begin_src lean4 :results output  
+  abbrev Str : Type := String
+  def a : Str := "Hola"
+  #check a
+#+end_src
+
+#+RESULTS:
+: a : Str
+
+
+* Estructuras
+
+Un punto cartesiano es una estructura con dos Float llamados x y y. Esto se declara usando la
+palabra clave ~structure~
+
+#+begin_src lean4 :results output :session estructures
+  structure Point where
+    x : Float
+    y : Float
+#+end_src
+
+#+RESULTS:
+
+Después de esta declaración, Point es un nuevo tipo estructura. La forma típica de crear un valor
+de un tipo estructura es dar valores para sus atributos
+
+#+begin_src lean4 :results output :session estructures 
+  def origin : Point := { x := 0.0, y := 0.0 }
+  #eval origin
+#+end_src
+
+#+RESULTS:
+: { x := 0.000000, y := 0.000000 }
+
+También podemos extraer los campos de un valor
+
+#+begin_src lean4 :results output :session estructures 
+  #eval origin.x
+  #eval origin.y
+#+end_src
+
+#+RESULTS:
+: 0.000000
+: 0.000000
+
+Esto se puede usar para definir funciones que toman estructuras como argumentos. Por ejemplo, la
+adición de puntos:
+
+#+begin_src lean4 :results output :session estructures 
+  def addPoints (p1 : Point) (p2 : Point) : Point :=
+    { x := p1.x + p2.x, y := p1.y + p2.y }
+  #eval addPoints { x := 1.5, y := 32 } { x := -8, y := 0.2 }
+#+end_src
+
+#+RESULTS:
+: { x := -6.500000, y := 32.200000 }
+
+La función toma dos Points como argumentos, llamados p1 y p2. El punto resultante se base en los
+campos x y y de p1 y p2.
+
+Similarmente, la distancia entre dos puntos, que es la raíz de la suma de los cuadrados de las
+diferencias entre sus componentes
+
+#+begin_src lean4 :results output :session estructures 
+  def distance (p1 : Point) (p2 : Point) : Float :=
+    Float.sqrt ( (p2.x - p1.x) ^ 2.0 + (p2.y - p1.y) ^ 2.0)
+  #eval distance { x := 1.0, y := 2.0 } { x := 5.0, y := -1.0 }
+#+end_src
+
+#+RESULTS:
+: 5.000000
+
+** Actualizando estructuras
+Lean da una sitaxis conveniente para reemplazar algunos campos dentro de una estructura y los otros
+dejarlos iguales. Esto se usa con la palabra clave ~with~ en la inicialización de una estructura.
+
+#+begin_src lean4 :results output :session estructures
+  def zeroX (p : Point) : Point :=
+    { p with x := 0 }
+#+end_src
+
+#+RESULTS:
+
+#+begin_src lean4 :results output :session estructures
+  def fourAndThree : Point :=
+    { x := 4.3, y := 3.4 }
+
+  #eval fourAndThree
+
+  #eval zeroX fourAndThree
+
+  #eval fourAndThree
+#+end_src
+
+#+RESULTS:
+: { x := 4.300000, y := 3.400000 }
+: { x := 0.000000, y := 3.400000 }
+: { x := 4.300000, y := 3.400000 }
+
+
+* Tipos de datos y patrones
+Los tipos de datos que permiten decisiones son llamados *sum types* y los que incluyen instancias de
+sí mismos son llamados *recursive datatypes*. Los Recursive sum types son llamados
+*inductive datatypes*, pues se puede usar inducción para porbar afirmaciones sobre ellos.
+
+Por ejemplo, Bool es un tipo inductivo
+
+#+begin_src lean4 :results output  
+  inductive Bool where
+    | false : Bool
+    | true : Bool
+#+end_src
+
+El tipo de números naturales es inductivo
+
+#+begin_src lean4 :results output  
+  inductive Nat where
+    | zero : Nat
+    | succ (n : Nat) : Nat
+#+end_src
+
+** Pattern matching
+Un ejemplo de función que usa pattern matching es la función isZero
+
+#+begin_src lean4 :results output  
+  def isZero (n : Nat) : Bool :=
+    match n with
+    | Nat.zero => true
+    | Nat.succ k => false
+#+end_src
+
+Otra función que usa pattern matching
+
+#+begin_src lean4 :results output 
+  def pred (n : Nat) : Nat :=
+    match n with
+    | Nat.zero => Nat.zero
+    | Nat.succ k => k
+
+  #eval pred 5
+#+end_src
+
+#+RESULTS:
+: 4
+
+** Funciones recursivas
+Un ejemplo de función recursiva es
+
+#+begin_src lean4 :results output 
+  def even (n : Nat) : Bool :=
+    match n with
+    | Nat.zero => true
+    | Nat.succ k => not (even k)
+#+end_src
+
+Otra más
+
+#+begin_src lean4 :results output  
+  def plus (n : Nat) (k : Nat) : Nat :=
+    match k with
+    | Nat.zero => n
+    | Nat.succ k' => Nat.succ (plus n k')
+
+  #eval plus 2 3
+#+end_src
+
+#+RESULTS:
+: 5
+
+Otra más
+
+#+begin_src lean4 :results output 
+  def times (n : Nat) (k : Nat) : Nat :=
+    match k with
+    | Nat.zero => Nat.zero
+    | Nat.succ k' =>  n + (times n k')
+
+  #eval times 2 3
+#+end_src
+
+#+RESULTS:
+: 6
+
+
+
+* Polimorfismo
+Una verisón polimorfica de Point, llamada PPoint puede tomar un tipo como argumento, y usar ese tipo
+ambos campos
+
+#+begin_src lean4 :results output :session polimorfo
+  structure PPoint (a : Type) where
+    x : a
+    y : a
+#+end_src
+
+#+begin_src lean4 :results output :session polimorfo
+  def natOrigin : PPoint Nat :=
+    { x := Nat.zero, y := Nat.zero }
+#+end_src
+
+Las definiciones también pueden tomar tipos como argumentos
+
+#+begin_src lean4 :results output :session polimorfo
+  def replaceX (a : Type) (point : PPoint a) (newX : a) : PPoint a :=
+    { point with x := newX }
+#+end_src
+
+#+begin_src lean4 :results output :session polimorfo 
+  #check (replaceX)
+#+end_src
+
+#+RESULTS:
+: replaceX : (a : Type) → PPoint a → a → PPoint a
+
+#+begin_src lean4 :results output :session polimorfo 
+  #check replaceX Nat
+  #check replaceX Nat natOrigin
+  #check replaceX Nat natOrigin 5
+#+end_src
+
+#+RESULTS:
+: replaceX Nat : PPoint Nat → Nat → PPoint Nat
+: replaceX Nat natOrigin : Nat → PPoint Nat
+: replaceX Nat natOrigin 5 : PPoint Nat
+
+#+begin_src lean4 :results output :session signo 
+  inductive Sign where
+    | pos
+    | neg
+#+end_src
+
+#+RESULTS:
+
+Podemos escribir una fucnión cuyo argumento es un signo
+
+#+begin_src lean4 :results output :session signo
+  def posOrNegThree (s : Sign) : match s with | Sign.pos => Nat | Sign.neg => Int :=
+    match s with
+    | Sign.pos => (3 : Nat)
+    | Sign.neg => (-3 : Int)
+
+  #eval posOrNegThree Sign.neg
+#+end_src
+
+#+RESULTS:
+: -3
+
+
+** Linked lists
+La biblioteca estándar de Lean incluye listas linkeadas, llamadas ~List~.
+
+#+begin_src lean4 :results output 
+  def primesUnder10 : List Nat := [2, 3, 5, 7]
+#+end_src
+
+Detrás de escenas, List es un tipo inductivo
+
+#+begin_src lean4 :results output 
+  inductive List (a : Type) where
+    | nil : List a
+    | cons : a -> List a -> List a
+#+end_src
+
+Para calcular la longitud
+
+#+begin_src lean4 :results output  
+  def length (a : Type) (xs : List a) : Nat :=
+    match xs with
+    | List.nil => Nat.zero
+    | List.cons y ys => Nat.succ (length a ys)
+#+end_src
+
+o más sucintamente
+
+#+begin_src lean4 :results output  
+  def length (a : Type) (xs : List a) : Nat :=
+    match xs with
+    | [] => 0
+    | y :: ys => Nat.succ (length a ys)
+#+end_src
+

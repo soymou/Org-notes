@@ -1,0 +1,17 @@
+{"synthetic": false,
+ "schemaVersion": "2025-09-10",
+ "outputs": "9ff970635dce4718",
+ "log":
+ [{"message":
+   ".> /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/bin/clang -o /home/mou/Desktop/Personal/Org/Lean/helloWorld/feline/.lake/build/bin/feline /home/mou/Desktop/Personal/Org/Lean/helloWorld/feline/.lake/build/ir/Main.c.o.export -L /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/lib/lean --sysroot /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07 -L /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/lib -L /home/mou/.elan/toolchains/leanprover--lean4-nightly---nightly-2026-01-07/lib/glibc -lc -lc_nonshared -Wl,--as-needed -l:ld.so -Wl,--no-as-needed -lpthread_nonshared -Wl,--as-needed -Wl,-Bstatic -lgmp -lunwind -luv -Wl,-Bdynamic -Wl,--no-as-needed -fuse-ld=lld -Wl,--start-group -lleancpp -lLean -Wl,--end-group -lStd -Wl,--start-group -lInit -lleanrt -Wl,--end-group -Wl,-Bstatic -lc++ -lc++abi -Wl,-Bdynamic -lLake -Wl,--as-needed -lgmp -luv -lpthread -ldl -lrt -Wl,--no-as-needed -lm -ldl -pthread",
+   "level": "trace"}],
+ "inputs":
+ [["linkObjs",
+   [["/home/mou/Desktop/Personal/Org/Lean/helloWorld/feline/.lake/build/ir/Main.c.o.export",
+     "a96220bd6a762df2"]]],
+  ["linkLibs", "00000000000006bb"],
+  ["Lean 4.28.0, commit ff87bcb8e57caeee38aa1dd05a212c0b2c51a902",
+   "13a94847ee021cbc"],
+  ["traceArgs: #[]", "00000000000006bb"],
+  ["x86_64-unknown-linux-gnu", "53a0e8937c307c28"]],
+ "depHash": "95a71a1ca4664060"}
