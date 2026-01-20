@@ -1,0 +1,220 @@
+#+title: Capitulo 2
+
+* Capítulo 2
+:PROPERTIES:
+:header-args: :tangle Codigo/capitulo-2.clj :results silent
+:END:
+
+** Escalares
+
+Clojure contiene algunos tipos de datos básicos comunes como números,
+enteros, números de punto flotante y racionales.
+*** Símbolos
+Los símbolos en clojure son objetos que se usan para representar otros valores:
+
+#+begin_src clojure
+(def yucky-pi 22/7)
+#+end_src
+
+Cuando un número o string es evaluado, obtenemos exactamente el mismo objeto,
+pero cuando un símbolo es evaluado, obtenemos el valor al que el símbolo se refiere
+en el contexto actual.
+
+*** Keywords
+Los keywords son similares a los símbolos, salvo que siempre se evalúan a sí mismos.
+En Clojure son más comunes que los símbolos:
+
+#+begin_src clojure
+:chumby
+:2
+:?
+:ThisIsTheNameOfaKeyword
+#+end_src
+
+*** Caracteres
+En Clojure los caracteres se escriben con el símbolo literal pero pre-fijado con un
+~\~.
+
+** Colecciones
+*** Listas
+Las listas literales se escriben con paréntesis
+
+#+begin_src clojure
+(yankee hotel foxtrot)
+#+end_src
+
+Cuando una lista es evaluada, el primer término de la lista se resuelve a una función,
+macro u operador especial. Si ~yankee~ es una función, los items que quedan se evalúan
+en orden y los resultados se pasan como parámetros a ~yankee~.
+
+- Nota: Una /forma/ en Clojure es un objeto que debe ser evaluado, incluyendo listas,
+  vectores, mapas, números, keywords y símbolos. Una /special form/ es una forma con
+  sintaxis especial o reglas de evaluación especiales, por ejemplo, el operador dot.
+
+Si ~yankee~ es una macro o un operador especial, los items restantes no necesariamente
+se evalúan, pero se procesan como define el macro u operador. Las listas pueden
+contener items de cualquier tipo, incluyendo otras colecciones. La lista
+vacía en Clojure se escribe ~()~ y no es lo mismo que ~nil~.
+
+*** Vectores
+Como las listas, los vectores son una serie de valores. Por ahora, lo importante
+es que
+- Tienen distinta sintaxis usando corchetes:
+ #+begin_src clojure
+ [1 2 :a :b :c]
+ #+end_src
+
+- Los vectores evalúan cada item en orden. Ninguna función o macro se ejecuta sobre
+ el vector, los vectores son heterogéneos y el vector vacío ~[]~ no es lo mismo que
+  ~nil~.
+
+*** Mapas
+Los mapas guardan llaves únicas y un valor para cada llave, como los diccionarios en
+otros lenguajes. Clojure tiene distintos tipos de mapas. Los mapas se pueden escribir
+con llaves cada llave seguida por su valor. No se tienen que usar comas para
+separarlos, pero es más limpio.
+#+begin_src clojure
+{1 "one", 2 "two", 3 "three"}
+#+end_src
+
+Todos los items (llaves y valores) en un mapa son evaluados antes de que su resultado
+se guarde en el mapa. De nuevo, el mapa vacío ~{}~ no es lo mismo que ~nil~.
+
+*** Conjuntos
+Los conjuntos guardan cero o más items únicos. Se escriben con llaves pero con un ~#~
+antes:
+
+#+begin_src clojure
+#{1 2 "three" :four 0x5}
+#+end_src
+
+El conjunto vacío ~#{}~ no es lo mismo que ~nil~.
+
+** Llamando funciones
+Las funciones en Clojure son ciudadanos de primera clase, lo que significa que se pueden
+usar igual que cualquier otro valor. Clojure usa notación prefija:
+
+#+begin_src clojure
+(vector 1 2 3) ;; Pasa 1, 2 y 3 a la función vector
+#+end_src
+
+** Las variables no varían
+Una variable es un símbolo que guarda un único valor. Su valor puede cambiar pero sólo
+si el usuario lo hace manualmente. Un valor de una variable puede ser ~shadowed~, pero
+esto no cambia su valor. Usar ~def~ es la manera más común de crear variables
+#+begin_src clojure
+(def x 42)
+#+end_src
+Esto asigna el valor 42 al símbolo ~x~, pero las variables no requieren un valor.
+
+** Funciones
+*** Funciones anónimas
+Una función anónima en Clojure se puede definir usando una forma especial.
+#+begin_src clojure
+(fn [x y]
+  (println "Creando un conjunto")
+  #{x y})
+#+end_src
+
+Las funciones regresan como resultado la última expresión en su cuerpo. Para evaluar
+una función hay que rodearla por paréntesis.
+
+*** Funciones nombradas
+Podemos usar ~def~ para definir un símbolo como una función, pero también podemos usar
+~defn~ para que sea más claro y corto:
+#+begin_src clojure
+(def make-set
+  (fn [x y]
+    (println "Creando un conjunto")
+    #{x y})
+#+end_src
+
+#+begin_src clojure
+(defn making-set
+  "Toma dos valores y crea un conjunto"
+  [x y]
+  (println "Creando un conjunto")
+  #{x y})
+#+end_src
+
+*** Funciones con múltiples aridades
+Podemos crear funciones que actúen de forma distinta dependiendo del número de
+argumentos que le pasemos
+#+begin_src clojure
+(defn set-maker
+  ([x] #{x})
+  ([x y] #{x y}))
+#+end_src
+
+*** Funciones in-place
+Clojure da un atajo para crear funciones anónimas
+
+#+begin_src clojure
+(def make-list0 #(list)) ;; No toma argumentos
+
+(def make-list2 #(list %1 %2)) ;; Toma dos argumentos
+
+(def make-list2+ #(list %1 %2 %&)) ;; Toma dos o más argumentos
+#+end_src
+
+** Locales, loops y bloques
+*** Bloques
+Cuando tenemos una serie de expresiones en bloque que queremos que sean tratadas como
+una sola expresión podemos usar ~do~, de nuevo, sólo se regresa la última expresión:
+
+#+begin_src clojure
+(do
+  (def x 5)
+  (def y 4)
+  (+ x y)
+  [x y])
+#+end_src
+
+Las expresiones en un bloque se ejecutan una a una.
+
+*** Locales
+Clojure no tiene variables locales, pero sí tiene locales, sólo que no pueden variar.
+Se crean con la forma ~let~ que empieza con un vector que define los bindings seguido de
+cualquier número de expresiones que conforman el cuerpo que puede usar estas locales
+
+#+begin_src clojure
+(let [r 5
+      pi 3.1415
+      r-squared (* r r)]
+  (println "El radio es " r)
+  (*pi r-squared))
+#+end_src
+
+El cuerpo se comporta como un ~do~ implícito.
+
+*** Loops
+La manera clásica de crear un loop en Lisp es con una llamada recursiva.
+**** Recur
+Clojure tiene una forma especial para tail recursion. La siguiente función imprime los
+números de ~x~ a 1:
+
+#+begin_src clojure
+(defn print-down-from [x]
+  (when (pos? x)        ;; Se realiza mientras x sea positivo
+    (println x)         ;; Imprime x
+    (recur (dec x))))   ;; Recurre con x menos 1
+#+end_src
+
+**** Loop
+También podemos crear loops así
+#+begin_src clojure
+(defn sum-down-from [initial-x]
+  (loop [sum 0, x initial-x]
+    (if (pos? x)
+      (recur (+ sum x) (dec x))
+      sum)))
+#+end_src
+
+
+
+
+** Previniendo cosas
+El operado ~quote~ o ~'~ previene que se evalúe su argumento. Y es contrarrestado por
+el operador unquote ~~~
+
+** Interop
