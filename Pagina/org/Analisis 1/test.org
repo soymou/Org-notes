@@ -1,4 +1,4 @@
 #+TITLE: Test
 #+AUTHOR: Emilio Junoy
 
-Esto es una prueba
+Esto es una prueba $inline$ de escritura.

@@ -7,10 +7,19 @@ import rehypeMathjax from 'rehype-mathjax';
 export default defineConfig({
   integrations: [
     starlight({
-      title: 'My Notebook',
+      title: 'Notas',
+      // Using 'root' locale ensures Spanish is served at the root URL (/)
+      // instead of /es/
+      defaultLocale: 'root',
+      locales: {
+        root: {
+          label: 'Español',
+          lang: 'es',
+        },
+      },
       sidebar: [
         {
-          label: 'Notes',
+          label: 'Notas',
           autogenerate: { directory: 'notes' },
           collapsed: true,
         },

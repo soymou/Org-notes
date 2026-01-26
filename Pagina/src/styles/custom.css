@@ -7,7 +7,14 @@ mjx-container[display="true"] {
   margin: 2rem 0 !important;
 }
 
-/* Ensure the SVG content inside is not left-aligned */
+/* Ensure inline math stays inline and doesn't break the line */
+mjx-container:not([display="true"]) {
+  display: inline-block !important;
+  vertical-align: middle;
+  margin: 0 0.1em !important;
+}
+
+/* Ensure the SVG content inside is not left-aligned in display mode */
 mjx-container[display="true"] > svg {
   margin: 0 !important;
 }
@@ -18,4 +25,8 @@ mjx-container[display="true"] > svg {
   justify-content: center !important;
   width: 100% !important;
   margin: 2rem 0 !important;
+}
+
+.katex {
+  white-space: nowrap;
 }
