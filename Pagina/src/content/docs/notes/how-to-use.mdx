@@ -1,7 +1,11 @@
 ---
+sidebar:
+  hidden: true
 author: Notebook System
 title: "Guide: Writing Notes"
 ---
+
+import { Aside, Badge, Card, CardGrid, Code, FileTree, Icon, LinkButton, LinkCard, Steps, TabItem, Tabs } from '@astrojs/starlight/components';
 
 This guide explains how to write notes in Org-mode for this Astro
 Starlight site. This file is hidden from the sidebar but accessible via
@@ -13,6 +17,7 @@ Write standard Org-mode syntax:
 
 - **Bold text**
 - *Italic text*
+- <u>Underlined text</u>
 - `Code snippets`
 
 # Mathematical Equations
@@ -20,7 +25,9 @@ Write standard Org-mode syntax:
 - ****Inline math****: Use single dollar signs: $E = mc^2$.
 - ****Display math****: Use double dollar signs on their own lines:
 
-$$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
+$$
+\sum_{i=1}^{n} i = \frac{n(n+1)}{2}
+$$
 
 # Starlight Components
 
@@ -29,39 +36,39 @@ imports them.
 
 ## Asides (Alerts)
 
-\<Aside type=\"note\"\>This is a default note.\</Aside\> \<Aside
-type=\"tip\"\>This is a tip.\</Aside\> \<Aside type=\"caution\"\>Use
-this for warnings.\</Aside\> \<Aside type=\"danger\"\>Use this for
-critical errors.\</Aside\>
+<Aside type="note">This is a default note.</Aside> <Aside
+type="tip">This is a tip.</Aside> <Aside type="caution">Use
+this for warnings.</Aside> <Aside type="danger">Use this for
+critical errors.</Aside>
 
 ## Cards & Grids
 
-\<CardGrid\> \<Card title=\"Card One\" icon=\"star\"\> Content for the
-first card. \</Card\> \<Card title=\"Card Two\" icon=\"moon\"\> Content
-for the second card. \</Card\> \</CardGrid\>
+<CardGrid> <Card title="Card One" icon="star"> Content for the
+first card. </Card> <Card title="Card Two" icon="moon"> Content
+for the second card. </Card> </CardGrid>
 
 ## Steps
 
-\<Steps\>
+<Steps>
 
-1.  Write your note in `org/`{.verbatim}.
+1.  Write your note in `org/`.
 2.  Save the file.
 3.  Watch the browser refresh.
 
-\</Steps\>
+</Steps>
 
 ## Tabs
 
-\<Tabs\> \<TabItem label=\"Org Source\"\> `* Heading` \</TabItem\>
-\<TabItem label=\"Result\"\> **Heading** \</TabItem\> \</Tabs\>
+<Tabs> <TabItem label="Org Source"> `* Heading` </TabItem>
+<TabItem label="Result"> **Heading** </TabItem> </Tabs>
 
 ## Badges
 
-Look at this \<Badge text=\"New Feature\" variant=\"tip\" /\>!
+Look at this <Badge text="New Feature" variant="tip" />!
 
 ## File Tree
 
-\<FileTree\>
+<FileTree>
 
 - org/
   - notes.org
@@ -69,7 +76,7 @@ Look at this \<Badge text=\"New Feature\" variant=\"tip\" /\>!
   - content/
     - docs/
 
-\</FileTree\>
+</FileTree>
 
 # Links
 

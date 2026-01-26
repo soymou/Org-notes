@@ -1,3 +1,17 @@
-#+TITLE: Test
+#+TITLE: My First Note
+#+AUTHOR: Mou
 
-test
+* Introduction
+This is a note written in Org-mode.
+
+* Formatting
+This is _underlined_ and this is =verbatim= and this is ~code~.
+
+* Math
+Here is an equation:
+\( E = mc^2 \)
+
+And a block:
+\[
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\]

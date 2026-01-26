@@ -7,6 +7,7 @@ This guide explains how to write notes in Org-mode for this Astro Starlight site
 Write standard Org-mode syntax:
 - *Bold text*
 - /Italic text/
+- _Underlined text_
 - ~Code snippets~
 
 * Mathematical Equations
@@ -63,6 +64,8 @@ Look at this <Badge text="New Feature" variant="tip" />!
   - content/
     - docs/
 </FileTree>
+
+
 
 * Links
 - Internal link: [[file:test.org][Link to another note]] (Note: Use the relative path to the org file).
