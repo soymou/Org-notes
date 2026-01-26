@@ -9,6 +9,7 @@ Here is an equation:
 \( E = mc^2 \)
 
 And a block:
-\[
+$$
 \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
-\]
+$$
+

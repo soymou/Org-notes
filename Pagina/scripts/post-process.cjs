@@ -8,12 +8,21 @@ if (!filePath) {
 let content = fs.readFileSync(filePath, 'utf8');
 
 // 1. Broadly unescape tags and quotes
-// This ensures <Component>, <div>, and attributes like title="foo" work.
-content = content.replace(/\\</g, '<');
-content = content.replace(/\\>/g, '>');
-content = content.replace(/\\\"/g, '"');
+content = content.replace(/\</g, '<');
+content = content.replace(/\>/g, '>');
+content = content.replace(/\"/g, '"');
 
-// 2. Inject comprehensive Starlight components import
+// 2. Fix Display Math ($$) 
+// Ensure it has its own lines and is not collapsed to $$test$$
+// We look for $$ something $$
+// $$
+// something
+// $$
+content = content.replace(/\$\$\s*([\s\S]*?)\s*\$\$/g, (match, p1) => {
+    return `\n\n$$\n${p1.trim()}\n$$\n\n`;
+});
+
+// 3. Inject comprehensive Starlight components import
 const components = [
     'Aside',
     'Badge',
@@ -34,5 +43,8 @@ const importLine = `import { ${components.join(', ')} } from '@astrojs/starlight
 if (!content.includes('@astrojs/starlight/components')) {
     content = content.replace(/^(---[\s\S]*?---)/, `$1\n\n${importLine}\n`);
 }
+
+// 4. Cleanup extra newlines that might have been created
+content = content.replace(/\n{3,}/g, '\n\n');
 
 fs.writeFileSync(filePath, content);

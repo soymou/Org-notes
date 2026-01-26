@@ -19,11 +19,10 @@ find "$SRC_DIR" -type f -name "*.org" | while read -r file; do
     # 1. Convert Org to Markdown
     pandoc "$file" -f org -t markdown --mathjax -o "$outfile" --standalone
     
-    # 2. Ensure display math ($$) has blank lines around it
-    perl -i -0777 -pe 's/\n\$\$/\n\n\$\$/g' "$outfile"
-    perl -i -0777 -pe 's/\$\$\n/\$\$\n\n/g' "$outfile"
+    # 2. Inject layout (Starlight doesn't need it, but we handle frontmatter)
+    # Actually pandoc --standalone handles the frontmatter.
     
-    # 3. Post-process with Node.js (unescape components and inject imports)
+    # 3. Post-process with Node.js (Math fixing, unescaping, imports)
     node scripts/post-process.cjs "$outfile"
 
 done
