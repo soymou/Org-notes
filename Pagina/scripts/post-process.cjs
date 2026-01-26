@@ -8,16 +8,14 @@ if (!filePath) {
 let content = fs.readFileSync(filePath, 'utf8');
 
 // 1. Broadly unescape tags and quotes
-content = content.replace(/\</g, '<');
-content = content.replace(/\>/g, '>');
-content = content.replace(/\"/g, '"');
+// We need to match literal backslashes followed by <, > or "
+content = content.replace(/\\</g, '<');
+content = content.replace(/\\>/g, '>');
+content = content.replace(/\\"/g, '"');
 
 // 2. Fix Display Math ($$) 
-// Ensure it has its own lines and is not collapsed to $$test$$
-// We look for $$ something $$
-// $$
-// something
-// $$
+// Pandoc often collapses $$ \n test \n $$ into $$test$$
+// We ensure it has its own lines and spacing
 content = content.replace(/\$\$\s*([\s\S]*?)\s*\$\$/g, (match, p1) => {
     return `\n\n$$\n${p1.trim()}\n$$\n\n`;
 });
@@ -44,7 +42,7 @@ if (!content.includes('@astrojs/starlight/components')) {
     content = content.replace(/^(---[\s\S]*?---)/, `$1\n\n${importLine}\n`);
 }
 
-// 4. Cleanup extra newlines that might have been created
+// 4. Cleanup extra newlines
 content = content.replace(/\n{3,}/g, '\n\n');
 
 fs.writeFileSync(filePath, content);
