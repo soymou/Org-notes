@@ -1,0 +1,8 @@
+#+TITLE: Advanced Math
+#+AUTHOR: Mou
+
+* Maxwell's Equations
+
+$$
+\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0}
+$$

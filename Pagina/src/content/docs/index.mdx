@@ -1,0 +1,31 @@
+---
+title: My Notebook
+description: Personal notes and equations.
+template: splash
+hero:
+  tagline: A collection of knowledge written in Org-mode.
+  actions:
+    - text: Browse Notes
+      link: /notes/test
+      icon: right-arrow
+      variant: primary
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Getting Started
+
+<CardGrid stagger>
+	<Card title="Write in Org-mode" icon="pencil">
+		Use your favorite editor (like Emacs) to write notes in `.org` files.
+	</Card>
+	<Card title="Automatic Conversion" icon="setting">
+		Your notes are instantly converted to MDX and integrated into the sidebar.
+	</Card>
+	<Card title="Beautiful Math" icon="open-book">
+		Full $\LaTeX$ support with perfectly centered equations.
+	</Card>
+	<Card title="Search & Navigation" icon="magnifier">
+		Built-in search and automatic hierarchical sidebar.
+	</Card>
+</CardGrid>

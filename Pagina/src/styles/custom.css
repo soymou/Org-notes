@@ -1,0 +1,21 @@
+/* Center display math in Starlight */
+.sl-markdown-content mjx-container[display="true"],
+mjx-container[display="true"] {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 2rem 0 !important;
+}
+
+/* Ensure the SVG content inside is not left-aligned */
+mjx-container[display="true"] > svg {
+  margin: 0 !important;
+}
+
+/* Fallback for other potential math engines */
+.katex-display {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 2rem 0 !important;
+}
