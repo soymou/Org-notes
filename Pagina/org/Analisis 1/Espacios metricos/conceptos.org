@@ -1,0 +1,70 @@
+#+TITLE: Conceptos básicos
+#+AUTHOR: Emilio Junoy
+
+** Motivación
+Una de las operaciones más importantes en el análisis matemático es tomar límites, lo
+haremos todo el tiempo. Cuando tomamos límites, no nos fijamos tanto en las propiedades
+algebráicas de los números reales, sino que resulta más importante la noción de distancia
+entre dos números.
+
+Tenemos experiencia calculando distancias usando el teorema de Pitágoras,
+pero ¿habrá otras maneras de medir las distancias? y, de ser así, ¿qué pasa con los límites?
+Un tema principal del análisis matemático es resolver estas preguntas y, para responderlas,
+hay que pensar más a profundidad nuestra noción de lo que es la distancia.
+
+** La idea de la distancia
+Apoyándonos en lo que ya sabemos, la distancia es un número que le asociamos a una pareja de números
+y, más en general, a una pareja de puntos. Supongamos que tenemos dos puntos $x$ y $y$ de un
+espacio $X$, donde un espacio no es más que un conjunto de los de siempre. Queremos asociarles
+un número que represente la distancia entre ellos. ¿Qué debe cumplir este número?
+
+Primero que nada, la distancia entre dos puntos debe ser única, no hace mucho sentido decir
+que la distancia entre $x$ y $y$ es a veces $2$ y a veces $3$, tampoco estaría chido que la distancia
+pueda salir negativa o compleja. Así, la distancia debe ser una /función/ que tome valores
+/reales/ y /no negativos/.
+
+En segundo lugar, la distancia debería poder ayudarnos a *distinguir* entre dos puntos, es decir,
+si dos puntos son iguales, su distancia debería ser $0$ y al revés también, si su distancia
+es $0$, deberían ser iguales. También debería ser simétrica, la distancia entre $x$ y $y$ tendría que
+ser igual a la distancia entre $y$ y $x$.
+
+Para llegar a la última propiedad que le pediremos a las distancias, hay que recordar una
+de las propiedades que cumplen los triángulos y las longitudes de sus lados, la
+bien llamada /desigualdad del triángulo/: la suma de dos lados de un triángulo debe ser mayor
+o igual que el tercero. Esta propiedad nos permite codificar el hecho de que la línea recta
+es el camino más corto entre dos puntos.
+
+Armados con estas ideas podemos dar nuestra primera definición:
+
+<Aside title="Definición 1">
+Por *espacio métrico* nos referimos a un par $(X, \rho)$ formado por un conjunto $X$ y una función real
+no negativa $\rho : X \times X \to \mathbb{R}$ a la que llamamos distancia o métrica que cumple las siguientes
+propiedades:
+  1. $\rho(x, y) = 0$ si y sólo si $x = y$.
+  2. /Simetría/: $\rho(x, y) = \rho(y, x)$.
+  3. /Desigualdad del triángulo/: $\rho(x, z) \leq \rho(x, y) + \rho(y, z)$.
+Frecuentemente nos referimos al conjunto $X$ como "espacio" y a sus elementos como "puntos".
+A los espacios métricos generalmente los denotamos con una sola letra, como
+$$
+R = (X, \rho)
+$$
+o a veces con la misma letra $X$ del espacio subyacente (cuando no haya confusión).
+</Aside>
+
+*** Ejemplos
+**** Ejemplo 1 (/Espacio discreto/)
+Consideremos la función
+$$
+ \rho(x, y) =
+ \begin{cases}
+   0 \text{ si } x = y\\
+   1 \text{ si } x \neq y
+ \end{cases}
+$$
+donde $x$ e $y$ son elementos de un conjunto cualquiera $X$, según nuestra definición,
+$(X, \rho)$ es un espacio métrico. A éste espacio métrico se le conoce como /espacio discreto/ o
+de /puntos aislados/.
+
+
+
+
